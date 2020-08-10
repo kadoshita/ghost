@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	r := gin.Default()
@@ -9,5 +12,6 @@ func main() {
 			"status": "OK",
 		})
 	})
+	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
 }
