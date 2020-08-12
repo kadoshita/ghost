@@ -173,12 +173,20 @@ const Home: React.FC = () => {
     const handleAddDialogOpen = () => {
         setOpen(true);
     };
-    const handleHostInfoInputDialogClose = (hostInfo: InputHostInfo) => {
+    const handleHostInfoInputDialogClose = async (hostInfo: InputHostInfo) => {
         setOpen(false);
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
         if (hostInfo) {
             const keys = Object.keys(hostInfo);
             if (keys.includes('hostname') && keys.includes('ipaddress') && keys.includes('os') && keys.includes('core') && keys.includes('ram') && keys.includes('disk')) {
                 console.log(hostInfo);
+                const res = await fetch(`${API_ENDPOINT}/host/`, {
+                    method: 'POST',
+                    body: JSON.stringify(hostInfo)
+                });
+                if (res.status === 200) {
+                    console.log('submit complete');
+                }
             }
         }
     }
