@@ -1,17 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/joho/godotenv"
 )
 
+// HostInfo はホストの基本的な情報を持つ
 type HostInfo struct {
-	Id        int    `json:"id"`
-	HostName  string `json:"hostname"`
+	gorm.Model
+	HostName  string `json:"hostname" gorm:"UNIQUE"`
 	IPAddress string `json:"ipaddress"`
 	OS        string `json:"os"`
 	Core      int    `json:"core"`
@@ -19,7 +24,31 @@ type HostInfo struct {
 	Disk      int    `json:"disk"`
 }
 
+var dbCon *gorm.DB
+
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Cannot load .env")
+	}
+
+	DBUser := os.Getenv("DB_USER")
+	DBPass := os.Getenv("DB_PASS")
+	DBAddress := os.Getenv("DB_ADDRESS")
+	DBPort := os.Getenv("DB_PORT")
+	DBName := os.Getenv("DB_NAME")
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DBUser, DBPass, DBAddress, DBPort, DBName)
+	db, err := gorm.Open("mysql", connectionString)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer db.Close()
+
+	db.AutoMigrate(&HostInfo{})
+
+	dbCon = db
+
 	r := gin.Default()
 	if os.Getenv("GIN_MODE") != "release" {
 		r.Use(cors.Default())
@@ -31,21 +60,19 @@ func main() {
 	})
 	hostAPI := r.Group("/api/host")
 	{
-		hostAPI.GET("/", onGetApiHosts)
-		hostAPI.POST("/", onPostApiHost)
+		hostAPI.GET("/", onGetAPIHosts)
+		hostAPI.POST("/", onPostAPIHost)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
 }
 
-func onGetApiHosts(c *gin.Context) {
-	dummyHostsData := make([]HostInfo, 3)
-	dummyHostsData[0] = HostInfo{0, "kounotori", "192.168.0.8", "ubuntu", 1, 512, 512}
-	dummyHostsData[1] = HostInfo{1, "akatsuki", "192.168.0.10", "ubuntu", 1, 1024, 16}
-	dummyHostsData[2] = HostInfo{2, "daichi", "192.168.0.11", "ubuntu", 1, 512, 32}
-	c.JSON(200, dummyHostsData)
+func onGetAPIHosts(c *gin.Context) {
+	var allHostInfo []HostInfo
+	dbCon.Find(&allHostInfo)
+	c.JSON(200, allHostInfo)
 }
-func onPostApiHost(c *gin.Context) {
+func onPostAPIHost(c *gin.Context) {
 	var postData HostInfo
 	err := c.ShouldBindJSON(&postData)
 	if err != nil {
@@ -53,6 +80,9 @@ func onPostApiHost(c *gin.Context) {
 		c.Status(500)
 	} else {
 		log.Println(postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk)
+		newData := HostInfo{HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk}
+		dbCon.NewRecord(newData)
+		dbCon.Create(&newData)
 		c.Status(200)
 	}
 }

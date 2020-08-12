@@ -17,3 +17,5 @@
 /ghost
 
 .DS_Store
+
+.env

@@ -3,7 +3,7 @@ import MainTemplate from '../templates/Main';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@material-ui/core'
 
 type HostInfo = {
-    id: number,
+    ID: number,
     hostname: string,
     ipaddress: string,
     os: string,
@@ -186,6 +186,9 @@ const Home: React.FC = () => {
                 });
                 if (res.status === 200) {
                     console.log('submit complete');
+                    const res = await fetch(`${API_ENDPOINT}/host/`);
+                    const resJson = await res.json();
+                    setHostData(resJson);
                 }
             }
         }
@@ -210,7 +213,7 @@ const Home: React.FC = () => {
                         {hostData.map(host => (
                             <TableRow key={host.hostname}>
                                 <TableCell component='th' scope='row'>
-                                    {host.id}
+                                    {host.ID}
                                 </TableCell>
                                 <TableCell>{host.hostname}</TableCell>
                                 <TableCell align='right'>{host.ipaddress}</TableCell>
