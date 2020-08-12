@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import { Drawer, AppBar, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Menu, ChevronLeft, ChevronRight, Home, Settings } from '@material-ui/icons';
+import { Menu, ChevronLeft, ChevronRight, Home, Settings, Add } from '@material-ui/icons';
 
 const drawerWidth = 240;
 
@@ -34,6 +34,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         menuButton: {
             marginRight: 36
+        },
+        title: {
+            flexGrow: 1
+        },
+        addButton: {
+            marginLeft: 36
         },
         hide: {
             display: 'none'
@@ -78,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const MainTemplate = (props: any) => {
     const classes = useStyles();
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -86,6 +92,10 @@ const MainTemplate = (props: any) => {
 
     const handleDrawerClose = () => {
         setOpen(false);
+    };
+
+    const handleAddButtonClick = () => {
+        props.handleAddDialogOpen();
     };
 
     return (
@@ -109,9 +119,16 @@ const MainTemplate = (props: any) => {
                     >
                         <Menu />
                     </IconButton>
-                    <Typography variant='h6' noWrap>
+                    <Typography variant='h6' noWrap className={classes.title}>
                         {props.title}
                     </Typography>
+                    {props.showAddButton ? <IconButton
+                        color='inherit'
+                        aria-label='add data'
+                        onClick={handleAddButtonClick}
+                        edge='end'>
+                        <Add></Add>
+                    </IconButton> : <></>}
                 </Toolbar>
             </AppBar>
             <Drawer
