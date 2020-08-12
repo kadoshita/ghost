@@ -27,20 +27,41 @@ const useStyles = makeStyles({
 
 const HostInfoInputDialog = (props: any) => {
     const [hostName, setHostName] = useState<string>('');
+    const [hostNameInputError, setHostNameInputError] = useState<string>('');
     const [ipAddress, setIpAddress] = useState<string>('');
+    const [ipAddressInputError, setIpAddressInputError] = useState<string>('');
     const [os, setOs] = useState<string>('');
+    const [osInputError, setOsInputError] = useState<string>('');
     const [core, setCore] = useState<number>(1);
+    const [coreInputError, setCoreInputError] = useState<string>('');
     const [ram, setRam] = useState<number>(1024);
+    const [ramInputError, setRamInputError] = useState<string>('');
     const [disk, setDisk] = useState<number>(32);
+    const [diskInputError, setDiskInputError] = useState<string>('');
     const formItemList = [
-        { id: 'hostname', label: 'HostName', default: '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value) },
-        { id: 'ipaddress', label: 'IP Address', default: '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setIpAddress(e.target.value) },
-        { id: 'os', label: 'OS', default: '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setOs(e.target.value) },
-        { id: 'core', label: 'CPU Core', default: 1, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setCore(parseInt(e.target.value, 10)) },
-        { id: 'ram', label: 'RAM (MB)', default: 1024, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setRam(parseInt(e.target.value, 10)) },
-        { id: 'disk', label: 'Disk (GB)', default: 32, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setDisk(parseInt(e.target.value, 10)) }
+        { id: 'hostname', label: 'HostName', default: '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value), error: hostNameInputError },
+        { id: 'ipaddress', label: 'IP Address', default: '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setIpAddress(e.target.value), error: ipAddressInputError },
+        { id: 'os', label: 'OS', default: '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setOs(e.target.value), error: osInputError },
+        { id: 'core', label: 'CPU Core', default: 1, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setCore(parseInt(e.target.value, 10)), error: coreInputError },
+        { id: 'ram', label: 'RAM (MB)', default: 1024, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setRam(parseInt(e.target.value, 10)), error: ramInputError },
+        { id: 'disk', label: 'Disk (GB)', default: 32, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setDisk(parseInt(e.target.value, 10)), error: diskInputError }
     ];
     const handleClose = () => {
+        props.handleClose();
+        setHostName('');
+        setIpAddress('');
+        setOs('');
+        setCore(1);
+        setRam(1024);
+        setDisk(32);
+        setHostNameInputError('');
+        setIpAddressInputError('')
+        setOsInputError('');
+        setCoreInputError('');
+        setRamInputError('');
+        setDiskInputError('');
+    };
+    const handleSubmit = () => {
         const hostInfo: InputHostInfo = {
             hostname: hostName,
             ipaddress: ipAddress,
@@ -49,7 +70,52 @@ const HostInfoInputDialog = (props: any) => {
             ram: ram,
             disk: disk
         };
-        if (hostName !== '' && ipAddress !== '' && os !== '' && core > 0 && ram > 0 && disk > 0) {
+
+        let isError = false;
+
+        if (hostName === '') {
+            setHostNameInputError('HostNameを入力してください');
+            isError = true;
+        } else {
+            setHostNameInputError('');
+        }
+
+        if (ipAddress === '') {
+            setIpAddressInputError('IP Addressを入力してください');
+            isError = true;
+        } else {
+            setIpAddressInputError('')
+        }
+
+        if (os === '') {
+            setOsInputError('OSを入力してください');
+            isError = true;
+        } else {
+            setOsInputError('');
+        }
+
+        if (core <= 0) {
+            setCoreInputError('CPU Coreは1以上の数値を入力してください');
+            isError = true;
+        } else {
+            setCoreInputError('');
+        }
+
+        if (ram <= 0) {
+            setRamInputError('RAMは1以上の数値を入力してください');
+            isError = true;
+        } else {
+            setRamInputError('');
+        }
+
+        if (disk <= 0) {
+            setDiskInputError('Diskは1以上の数値を入力してください');
+            isError = true;
+        } else {
+            setDiskInputError('');
+        }
+
+        if (!isError) {
             props.handleClose(hostInfo);
             setHostName('');
             setIpAddress('');
@@ -57,16 +123,16 @@ const HostInfoInputDialog = (props: any) => {
             setCore(1);
             setRam(1024);
             setDisk(32);
-        } else {
-            console.warn('error');
         }
-    };
+    }
     return (
         <Dialog open={props.open} onClose={handleClose} aria-labelledby='form-dialog-title'>
             <DialogTitle id='form-dialog-title'>ホスト情報登録</DialogTitle>
             <DialogContent>
                 {formItemList.map((f, i) => (<TextField
                     key={i}
+                    error={f.error !== ''}
+                    helperText={f.error}
                     autoFocus={i === 0}
                     margin='dense'
                     id={f.id}
@@ -81,7 +147,7 @@ const HostInfoInputDialog = (props: any) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color='primary'>キャンセル</Button>
-                <Button onClick={handleClose} color='primary'>登録</Button>
+                <Button onClick={handleSubmit} color='primary'>登録</Button>
             </DialogActions>
         </Dialog>
     )
@@ -109,9 +175,11 @@ const Home: React.FC = () => {
     };
     const handleHostInfoInputDialogClose = (hostInfo: InputHostInfo) => {
         setOpen(false);
-        const keys = Object.keys(hostInfo);
-        if (keys.includes('hostname') && keys.includes('ipaddress') && keys.includes('os') && keys.includes('core') && keys.includes('ram') && keys.includes('disk')) {
-            console.log(hostInfo);
+        if (hostInfo) {
+            const keys = Object.keys(hostInfo);
+            if (keys.includes('hostname') && keys.includes('ipaddress') && keys.includes('os') && keys.includes('core') && keys.includes('ram') && keys.includes('disk')) {
+                console.log(hostInfo);
+            }
         }
     }
 
