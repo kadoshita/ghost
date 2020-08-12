@@ -15,3 +15,5 @@
 # vendor/
 
 /ghost
+
+.DS_Store
