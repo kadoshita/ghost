@@ -2,17 +2,9 @@ import React, { useState, useEffect } from 'react';
 import MainTemplate from '../templates/Main';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Switch, FormControlLabel } from '@material-ui/core'
 import { Check } from '@material-ui/icons';
+import { HostInfo } from '../../types/HostInfo';
+import { withRouter } from 'react-router-dom';
 
-type HostInfo = {
-    ID: number,
-    active: boolean,
-    hostname: string,
-    ipaddress: string,
-    os: string,
-    core: number,
-    ram: number,
-    disk: number
-};
 type InputHostInfo = {
     active: boolean,
     hostname: string,
@@ -166,7 +158,7 @@ const HostInfoInputDialog = (props: any) => {
     )
 }
 
-const Home: React.FC = () => {
+const Home: React.FC = (props: any) => {
     window.document.title = 'Home - ghost';
 
     const classes = useStyles();
@@ -205,7 +197,10 @@ const Home: React.FC = () => {
                 }
             }
         }
-    }
+    };
+    const handleTableRowClick = (id: number) => {
+        props.history.push(`/detail/${id}`);
+    };
 
     return (
         <MainTemplate title='Home' showAddButton handleAddDialogOpen={handleAddDialogOpen}>
@@ -225,7 +220,7 @@ const Home: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {hostData.map(host => (
-                            <TableRow key={host.hostname}>
+                            <TableRow key={host.hostname} onClick={() => handleTableRowClick(host.ID)} hover>
                                 <TableCell component='th' scope='row'>
                                     {host.ID}
                                 </TableCell>
@@ -248,4 +243,4 @@ const Home: React.FC = () => {
     )
 };
 
-export default Home;
+export default withRouter(Home);

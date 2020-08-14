@@ -86,7 +86,6 @@ func onGetAPIHostByID(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "NotFound"})
 		return
 	}
-	log.Println(findHostByID.ID)
 	if dbCon.First(&hostInfo, findHostByID.ID).RecordNotFound() {
 		c.JSON(404, gin.H{"message": "NotFound"})
 		return
