@@ -25,6 +25,11 @@ type HostInfo struct {
 	Disk      int    `json:"disk"`
 }
 
+// FindHostByID はホスト情報取得用APIに渡されるパラメーター
+type FindHostByID struct {
+	ID int `uri:"id" binding:"required"`
+}
+
 var dbCon *gorm.DB
 
 func main() {
@@ -62,6 +67,7 @@ func main() {
 	hostAPI := r.Group("/api/host")
 	{
 		hostAPI.GET("/", onGetAPIHosts)
+		hostAPI.GET("/:id", onGetAPIHostByID)
 		hostAPI.POST("/", onPostAPIHost)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
@@ -72,6 +78,20 @@ func onGetAPIHosts(c *gin.Context) {
 	var allHostInfo []HostInfo
 	dbCon.Find(&allHostInfo)
 	c.JSON(200, allHostInfo)
+}
+func onGetAPIHostByID(c *gin.Context) {
+	var hostInfo HostInfo
+	var findHostByID FindHostByID
+	if err := c.ShouldBindUri(&findHostByID); err != nil {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+	log.Println(findHostByID.ID)
+	if dbCon.First(&hostInfo, findHostByID.ID).RecordNotFound() {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+	c.JSON(200, hostInfo)
 }
 func onPostAPIHost(c *gin.Context) {
 	var postData HostInfo
