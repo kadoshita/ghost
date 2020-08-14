@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import MainTemplate from '../templates/Main';
-import { useParams } from 'react-router-dom';
+import { useParams, withRouter } from 'react-router-dom';
 import { HostInfo } from '../../types/HostInfo';
-import { TableContainer, Paper, makeStyles, Table, TableBody, TableRow, TableCell } from '@material-ui/core';
+import { TableContainer, Paper, makeStyles, Table, TableBody, TableRow, TableCell, IconButton, Dialog, DialogTitle, DialogActions, Button } from '@material-ui/core';
+import { Edit, Delete } from '@material-ui/icons'
 
 const useStyles = makeStyles({
     table: {
@@ -10,10 +11,30 @@ const useStyles = makeStyles({
     },
 });
 
-const Detail: React.FC = () => {
+const HostInfoDeleteDialog = (props: any) => {
+    const handleClose = () => {
+        props.handleClose();
+    };
+    const handleDelete = () => {
+        props.handleClose(true);
+    };
+    return (
+        <Dialog open={props.open} onClose={handleClose} aria-label='form-dialog-title'>
+            <DialogTitle id='form-dialog-title'>{props.hostname}の情報を削除しますか?</DialogTitle>
+            <DialogActions>
+                <Button onClick={handleClose} color='primary'>キャンセル</Button>
+                <Button onClick={handleDelete} color='primary'>削除</Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+const Detail = (props: any) => {
     window.document.title = 'Detail - ghost';
 
     const [hostData, setHostData] = useState<HostInfo>();
+    const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+    const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
 
     const { id } = useParams();
     const classes = useStyles();
@@ -31,8 +52,51 @@ const Detail: React.FC = () => {
         fetchHostsData();
     }, [id]);
 
+    const handleEditDialogOpen = () => {
+        setOpenEditDialog(true);
+    };
+    const handleEditDialogClose = () => {
+
+    };
+    const handleDeleteDialogOpen = () => {
+        setOpenDeleteDialog(true);
+    };
+    const handleDeleteDialogClose = (deleteData = false) => {
+        setOpenDeleteDialog(false);
+        if (deleteData) {
+            const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+            const deleteHostData = async () => {
+                const res = await fetch(`${API_ENDPOINT}/host/${hostData?.ID}`, {
+                    method: 'delete'
+                });
+                if (res.status === 200) {
+                    props.history.push('/');
+                }
+            };
+            deleteHostData();
+        }
+    };
+    const titleBarButtonList = [
+        <IconButton
+            key={0}
+            color='inherit'
+            aria-label='delete data'
+            onClick={handleDeleteDialogOpen}
+            edge='end'>
+            <Delete></Delete>
+        </IconButton>,
+        <IconButton
+            key={1}
+            color='inherit'
+            aria-label='edit data'
+            onClick={handleEditDialogOpen}
+            edge='end'>
+            <Edit></Edit>
+        </IconButton>
+    ];
+
     return (
-        <MainTemplate title={hostData ? `Detail - ${hostData.hostname}` : 'Detail - NotFound'}>
+        <MainTemplate title={hostData ? `Detail - ${hostData.hostname}` : 'Detail - NotFound'} titleBarButtons={titleBarButtonList}>
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label='host info table'>
                     <TableBody>
@@ -67,8 +131,9 @@ const Detail: React.FC = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <HostInfoDeleteDialog open={openDeleteDialog} hostname={hostData?.hostname} handleClose={handleDeleteDialogClose}></HostInfoDeleteDialog>
         </MainTemplate>
     );
 };
 
-export default Detail;
+export default withRouter(Detail);

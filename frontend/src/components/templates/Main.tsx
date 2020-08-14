@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import { Drawer, AppBar, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Menu, ChevronLeft, ChevronRight, Home, Settings, Add } from '@material-ui/icons';
+import { Menu, ChevronLeft, ChevronRight, Home, Settings } from '@material-ui/icons';
 
 const drawerWidth = 240;
 
@@ -94,10 +94,6 @@ const MainTemplate = (props: any) => {
         setOpen(false);
     };
 
-    const handleAddButtonClick = () => {
-        props.handleAddDialogOpen();
-    };
-
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -122,13 +118,7 @@ const MainTemplate = (props: any) => {
                     <Typography variant='h6' noWrap className={classes.title}>
                         {props.title}
                     </Typography>
-                    {props.showAddButton ? <IconButton
-                        color='inherit'
-                        aria-label='add data'
-                        onClick={handleAddButtonClick}
-                        edge='end'>
-                        <Add></Add>
-                    </IconButton> : <></>}
+                    {props.titleBarButtons}
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -145,7 +135,7 @@ const MainTemplate = (props: any) => {
                 }}
             >
                 <div className={classes.toolbar}>
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={handleDrawerClose} aria-label='menu open button'>
                         {theme.direction === 'rtl' ? <ChevronRight /> : <ChevronLeft />}
                     </IconButton>
                 </div>

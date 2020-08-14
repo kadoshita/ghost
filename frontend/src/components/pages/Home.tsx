@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MainTemplate from '../templates/Main';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Switch, FormControlLabel } from '@material-ui/core'
-import { Check } from '@material-ui/icons';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Switch, FormControlLabel, IconButton } from '@material-ui/core'
+import { Check, Add } from '@material-ui/icons';
 import { HostInfo } from '../../types/HostInfo';
 import { withRouter } from 'react-router-dom';
 
@@ -133,7 +133,7 @@ const HostInfoInputDialog = (props: any) => {
                             onChange={e => setActive(e.target.checked)}
                             color='primary'
                             name='active'></Switch>}
-                    label='Active'></FormControlLabel>
+                    label={active ? 'Active' : 'InActive'}></FormControlLabel>
                 {formItemList.map((f, i) => (<TextField
                     key={i}
                     error={f.error !== ''}
@@ -202,8 +202,19 @@ const Home: React.FC = (props: any) => {
         props.history.push(`/detail/${id}`);
     };
 
+    const titleBarButtonList = [
+        <IconButton
+            key={0}
+            color='inherit'
+            aria-label='add data'
+            onClick={handleAddDialogOpen}
+            edge='end'>
+            <Add></Add>
+        </IconButton>
+    ];
+
     return (
-        <MainTemplate title='Home' showAddButton handleAddDialogOpen={handleAddDialogOpen}>
+        <MainTemplate title='Home' titleBarButtons={titleBarButtonList}>
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label='hosts table'>
                     <TableHead>

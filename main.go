@@ -17,7 +17,7 @@ import (
 type HostInfo struct {
 	gorm.Model
 	Active    bool   `json:"active" gorm:"DEFAULT:false"`
-	HostName  string `json:"hostname" gorm:"UNIQUE"`
+	HostName  string `json:"hostname"`
 	IPAddress string `json:"ipaddress"`
 	OS        string `json:"os"`
 	Core      int    `json:"core"`
@@ -69,6 +69,7 @@ func main() {
 		hostAPI.GET("/", onGetAPIHosts)
 		hostAPI.GET("/:id", onGetAPIHostByID)
 		hostAPI.POST("/", onPostAPIHost)
+		hostAPI.DELETE("/:id", onDeleteAPIHost)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
@@ -105,4 +106,23 @@ func onPostAPIHost(c *gin.Context) {
 		dbCon.Create(&newData)
 		c.Status(200)
 	}
+}
+func onDeleteAPIHost(c *gin.Context) {
+	var deleteHostByID FindHostByID
+	if err := c.ShouldBindUri(&deleteHostByID); err != nil {
+		c.JSON(400, gin.H{"message": "parameter error"})
+		return
+	}
+	var hostInfo HostInfo
+	hostInfo.ID = uint(deleteHostByID.ID)
+	if dbCon.First(&hostInfo).RecordNotFound() {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+	if err := dbCon.Delete(&hostInfo).Error; err != nil {
+		log.Fatalln(err)
+		c.Status(500)
+		return
+	}
+	c.Status(200)
 }
