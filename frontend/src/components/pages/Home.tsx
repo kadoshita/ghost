@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MainTemplate from '../templates/Main';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@material-ui/core'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Button, Switch, FormControlLabel } from '@material-ui/core'
+import { Check } from '@material-ui/icons';
 
 type HostInfo = {
     ID: number,
+    active: boolean,
     hostname: string,
     ipaddress: string,
     os: string,
@@ -12,6 +14,7 @@ type HostInfo = {
     disk: number
 };
 type InputHostInfo = {
+    active: boolean,
     hostname: string,
     ipaddress: string,
     os: string,
@@ -26,6 +29,7 @@ const useStyles = makeStyles({
 });
 
 const HostInfoInputDialog = (props: any) => {
+    const [active, setActive] = useState<boolean>(false);
     const [hostName, setHostName] = useState<string>('');
     const [hostNameInputError, setHostNameInputError] = useState<string>('');
     const [ipAddress, setIpAddress] = useState<string>('');
@@ -63,6 +67,7 @@ const HostInfoInputDialog = (props: any) => {
     };
     const handleSubmit = () => {
         const hostInfo: InputHostInfo = {
+            active: active,
             hostname: hostName,
             ipaddress: ipAddress,
             os: os,
@@ -129,6 +134,14 @@ const HostInfoInputDialog = (props: any) => {
         <Dialog open={props.open} onClose={handleClose} aria-labelledby='form-dialog-title'>
             <DialogTitle id='form-dialog-title'>ホスト情報登録</DialogTitle>
             <DialogContent>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={active}
+                            onChange={e => setActive(e.target.checked)}
+                            color='primary'
+                            name='active'></Switch>}
+                    label='Active'></FormControlLabel>
                 {formItemList.map((f, i) => (<TextField
                     key={i}
                     error={f.error !== ''}
@@ -201,6 +214,7 @@ const Home: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
+                            <TableCell>Active</TableCell>
                             <TableCell>HostName</TableCell>
                             <TableCell align='right'>IP Address</TableCell>
                             <TableCell align='right'>OS</TableCell>
@@ -214,6 +228,9 @@ const Home: React.FC = () => {
                             <TableRow key={host.hostname}>
                                 <TableCell component='th' scope='row'>
                                     {host.ID}
+                                </TableCell>
+                                <TableCell>
+                                    {host.active ? <Check></Check> : <></>}
                                 </TableCell>
                                 <TableCell>{host.hostname}</TableCell>
                                 <TableCell align='right'>{host.ipaddress}</TableCell>

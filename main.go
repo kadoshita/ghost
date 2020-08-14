@@ -16,6 +16,7 @@ import (
 // HostInfo はホストの基本的な情報を持つ
 type HostInfo struct {
 	gorm.Model
+	Active    bool   `json:"active" gorm:"DEFAULT:false"`
 	HostName  string `json:"hostname" gorm:"UNIQUE"`
 	IPAddress string `json:"ipaddress"`
 	OS        string `json:"os"`
@@ -79,8 +80,8 @@ func onPostAPIHost(c *gin.Context) {
 		log.Fatalln(err)
 		c.Status(500)
 	} else {
-		log.Println(postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk)
-		newData := HostInfo{HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk}
+		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk)
+		newData := HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk}
 		dbCon.NewRecord(newData)
 		dbCon.Create(&newData)
 		c.Status(200)
