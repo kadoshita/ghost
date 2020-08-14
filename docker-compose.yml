@@ -1,0 +1,29 @@
+version: "3"
+services:
+  app:
+    build: .
+    command: ["./ghost"]
+    restart: always
+    depends_on:
+      - db
+    environment:
+      GIN_MODE: release
+      DB_USER: ghost
+      DB_PASS: ghost
+      DB_ADDRESS: db
+      DB_PORT: 3306
+      DB_NAME: ghost
+    ports:
+      - 8080:8080
+  db:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ghost
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ghost
+      MYSQL_DATABASE: ghost
+volumes:
+  data:

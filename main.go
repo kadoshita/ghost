@@ -35,7 +35,7 @@ var dbCon *gorm.DB
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Cannot load .env")
+		log.Println("Cannot load .env")
 	}
 
 	DBUser := os.Getenv("DB_USER")
