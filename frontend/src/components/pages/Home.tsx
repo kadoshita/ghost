@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MainTemplate from '../templates/Main';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, IconButton } from '@material-ui/core'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, IconButton, Grid } from '@material-ui/core'
 import { Check, Add } from '@material-ui/icons';
+import Charts from 'react-apexcharts';
 import { HostInfo } from '../../types/HostInfo';
 import { withRouter } from 'react-router-dom';
 import HostInfoInputDialog from '../dialogs/HostInfoInput';
@@ -68,8 +69,35 @@ const Home: React.FC = (props: any) => {
         </IconButton>
     ];
 
+    const os = Array.from(new Set(hostData.map(h => h.os)));
+    const osCount = os.map(v => hostData.filter(h => h.os === v).length);
+
     return (
         <MainTemplate title='Home' titleBarButtons={titleBarButtonList}>
+            <Grid container>
+                <Grid item xs={3}>
+                    <Charts
+                        type='pie'
+                        series={[
+                            hostData.filter(h => h.active).length,
+                            hostData.filter(h => !h.active).length
+                        ]}
+                        options={{
+                            labels: ['Active', 'InActive']
+                        }}
+                    ></Charts>
+                </Grid>
+                <Grid item xs={3}>
+                    <Charts
+                        type='pie'
+                        series={osCount}
+                        options={{
+                            labels: os
+                        }}
+                    ></Charts>
+                </Grid>
+            </Grid>
+
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label='hosts table'>
                     <TableHead>

@@ -52,7 +52,6 @@ const HostInfoInputDialog = (props: any) => {
 
         let isError = false;
 
-        console.log(hostName, ipAddress, os, core, ram, disk);
         if (!hostName || hostName === '') {
             setHostNameInputError('HostNameを入力してください');
             isError = true;
