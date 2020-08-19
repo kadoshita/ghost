@@ -70,6 +70,7 @@ func main() {
 		hostAPI.GET("/:id", onGetAPIHostByID)
 		hostAPI.POST("/", onPostAPIHost)
 		hostAPI.DELETE("/:id", onDeleteAPIHost)
+		hostAPI.PUT("/:id", onPutAPIHost)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
@@ -97,8 +98,8 @@ func onPostAPIHost(c *gin.Context) {
 	var postData HostInfo
 	err := c.ShouldBindJSON(&postData)
 	if err != nil {
-		log.Fatalln(err)
 		c.Status(500)
+		log.Fatalln(err)
 	} else {
 		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk)
 		newData := HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk}
@@ -122,6 +123,28 @@ func onDeleteAPIHost(c *gin.Context) {
 	if err := dbCon.Delete(&hostInfo).Error; err != nil {
 		log.Fatalln(err)
 		c.Status(500)
+		return
+	}
+	c.Status(200)
+}
+
+func onPutAPIHost(c *gin.Context) {
+	var updateHostByID FindHostByID
+	if err := c.ShouldBindUri(&updateHostByID); err != nil {
+		c.JSON(400, gin.H{"message": "parameter error"})
+		return
+	}
+	var updateData HostInfo
+	if err := c.ShouldBindJSON(&updateData); err != nil {
+		c.Status(500)
+		log.Fatalln(err)
+		return
+	}
+	updateData.ID = uint(updateHostByID.ID)
+	log.Println(updateData.ID, updateData.Active, updateData.HostName, updateData.IPAddress, updateData.Core, updateData.RAM, updateData.Disk)
+	if err := dbCon.Save(&updateData).Error; err != nil {
+		c.Status(500)
+		log.Fatalln(err)
 		return
 	}
 	c.Status(200)

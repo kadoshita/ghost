@@ -4,6 +4,8 @@ import { useParams, withRouter } from 'react-router-dom';
 import { HostInfo } from '../../types/HostInfo';
 import { TableContainer, Paper, makeStyles, Table, TableBody, TableRow, TableCell, IconButton, Dialog, DialogTitle, DialogActions, Button } from '@material-ui/core';
 import { Edit, Delete } from '@material-ui/icons'
+import HostInfoInputDialog from '../dialogs/HostInfoInput';
+import { InputHostInfo } from '../../types/InputHostInfo';
 
 const useStyles = makeStyles({
     table: {
@@ -29,7 +31,7 @@ const HostInfoDeleteDialog = (props: any) => {
     );
 };
 
-const Detail = (props: any) => {
+const Detail: React.FC = (props: any) => {
     window.document.title = 'Detail - ghost';
 
     const [hostData, setHostData] = useState<HostInfo>();
@@ -55,8 +57,26 @@ const Detail = (props: any) => {
     const handleEditDialogOpen = () => {
         setOpenEditDialog(true);
     };
-    const handleEditDialogClose = () => {
-
+    const handleEditDialogClose = async (hostInfo: InputHostInfo) => {
+        setOpenEditDialog(false)
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+        if (hostInfo) {
+            const keys = Object.keys(hostInfo);
+            if (keys.includes('hostname') && keys.includes('ipaddress') && keys.includes('os') && keys.includes('core') && keys.includes('ram') && keys.includes('disk')) {
+                const res = await fetch(`${API_ENDPOINT}/host/${hostData?.ID}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(hostInfo)
+                });
+                if (res.status === 200) {
+                    const res = await fetch(`${API_ENDPOINT}/host/${hostData?.ID}`);
+                    if (res.status === 404) {
+                        return;
+                    }
+                    const resJson = await res.json();
+                    setHostData(resJson);
+                }
+            }
+        }
     };
     const handleDeleteDialogOpen = () => {
         setOpenDeleteDialog(true);
@@ -67,7 +87,7 @@ const Detail = (props: any) => {
             const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
             const deleteHostData = async () => {
                 const res = await fetch(`${API_ENDPOINT}/host/${hostData?.ID}`, {
-                    method: 'delete'
+                    method: 'DELETE'
                 });
                 if (res.status === 200) {
                     props.history.push('/');
@@ -132,6 +152,7 @@ const Detail = (props: any) => {
                 </Table>
             </TableContainer>
             <HostInfoDeleteDialog open={openDeleteDialog} hostname={hostData?.hostname} handleClose={handleDeleteDialogClose}></HostInfoDeleteDialog>
+            <HostInfoInputDialog open={openEditDialog} hostname={hostData?.hostname} active={hostData?.active} ipaddress={hostData?.ipaddress} os={hostData?.os} core={hostData?.core} ram={hostData?.ram} disk={hostData?.disk} handleClose={handleEditDialogClose}></HostInfoInputDialog>
         </MainTemplate>
     );
 };

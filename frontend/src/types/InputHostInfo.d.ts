@@ -1,5 +1,4 @@
-export type HostInfo = {
-    ID: number,
+export type InputHostInfo = {
     active: boolean,
     hostname: string,
     ipaddress: string,
