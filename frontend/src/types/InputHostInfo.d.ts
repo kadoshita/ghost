@@ -1,3 +1,4 @@
+import { HostType } from './HostInfo';
 export type InputHostInfo = {
     active: boolean,
     hostname: string,
@@ -6,5 +7,5 @@ export type InputHostInfo = {
     core: number,
     ram: number,
     disk: number,
-    type: 'server' | 'router' | 'virtual machine'
+    type: HostType
 };

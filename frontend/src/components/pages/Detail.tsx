@@ -156,7 +156,7 @@ const Detail: React.FC = (props: any) => {
                 </Table>
             </TableContainer>
             <HostInfoDeleteDialog open={openDeleteDialog} hostname={hostData?.hostname} handleClose={handleDeleteDialogClose}></HostInfoDeleteDialog>
-            <HostInfoInputDialog open={openEditDialog} hostname={hostData?.hostname} active={hostData?.active} ipaddress={hostData?.ipaddress} os={hostData?.os} core={hostData?.core} ram={hostData?.ram} disk={hostData?.disk} handleClose={handleEditDialogClose}></HostInfoInputDialog>
+            <HostInfoInputDialog open={openEditDialog} hostname={hostData?.hostname} active={hostData?.active} ipaddress={hostData?.ipaddress} os={hostData?.os} core={hostData?.core} ram={hostData?.ram} disk={hostData?.disk} type={hostData?.type} handleClose={handleEditDialogClose}></HostInfoInputDialog>
         </MainTemplate>
     );
 };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { InputHostInfo } from '../../types/InputHostInfo';
-import { Dialog, DialogTitle, DialogContent, FormControlLabel, TextField, DialogActions, Button, Switch } from '@material-ui/core';
+import { HostType } from '../../types/HostInfo';
+import { Dialog, DialogTitle, DialogContent, FormControlLabel, TextField, DialogActions, Button, Switch, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+
 
 const HostInfoInputDialog = (props: any) => {
     const [active, setActive] = useState<boolean>(false);
@@ -16,6 +18,7 @@ const HostInfoInputDialog = (props: any) => {
     const [ramInputError, setRamInputError] = useState<string>('');
     const [disk, setDisk] = useState<number>(32);
     const [diskInputError, setDiskInputError] = useState<string>('');
+    const [type, setType] = useState<HostType>('server');
     const formItemList = [
         { id: 'hostname', label: 'HostName', default: props.hostname, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value), error: hostNameInputError },
         { id: 'ipaddress', label: 'IP Address', default: props.ipaddress, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setIpAddress(e.target.value), error: ipAddressInputError },
@@ -32,6 +35,7 @@ const HostInfoInputDialog = (props: any) => {
         setCore(1);
         setRam(1024);
         setDisk(32);
+        setType('router');
         setHostNameInputError('');
         setIpAddressInputError('')
         setOsInputError('');
@@ -48,7 +52,7 @@ const HostInfoInputDialog = (props: any) => {
             core: core,
             ram: ram,
             disk: disk,
-            type: 'server'
+            type: type
         };
 
         let isError = false;
@@ -135,6 +139,11 @@ const HostInfoInputDialog = (props: any) => {
             setDisk(props.disk);
         }
     }, [props.disk]);
+    useEffect(() => {
+        if (props.type !== undefined) {
+            setType(props.type);
+        }
+    }, [props.type]);
     return (
         <Dialog open={props.open} onClose={handleClose} aria-labelledby='form-dialog-title'>
             <DialogTitle id='form-dialog-title'>ホスト情報登録</DialogTitle>
@@ -162,6 +171,19 @@ const HostInfoInputDialog = (props: any) => {
                     onChange={f.onchange}
                 >
                 </TextField>))}
+                <FormControl fullWidth>
+                    <InputLabel id="host-type">Type</InputLabel>
+                    <Select
+                        labelId="host-type"
+                        id="host-type-select"
+                        value={type}
+                        onChange={e => setType(e.target.value as HostType)}
+                    >
+                        <MenuItem value='server'>Server</MenuItem>
+                        <MenuItem value='router'>Router</MenuItem>
+                        <MenuItem value='virtual machine'>Virtual Machine</MenuItem>
+                    </Select>
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color='primary'>キャンセル</Button>

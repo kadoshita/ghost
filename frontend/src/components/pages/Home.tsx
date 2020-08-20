@@ -39,7 +39,7 @@ const Home: React.FC = (props: any) => {
         const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
         if (hostInfo) {
             const keys = Object.keys(hostInfo);
-            if (keys.includes('hostname') && keys.includes('ipaddress') && keys.includes('os') && keys.includes('core') && keys.includes('ram') && keys.includes('disk')) {
+            if (keys.includes('hostname') && keys.includes('ipaddress') && keys.includes('os') && keys.includes('core') && keys.includes('ram') && keys.includes('disk') && keys.includes('type')) {
                 console.log(hostInfo);
                 const res = await fetch(`${API_ENDPOINT}/host/`, {
                     method: 'POST',
