@@ -7,6 +7,7 @@ import { HostInfo } from '../../types/HostInfo';
 import { withRouter } from 'react-router-dom';
 import HostInfoInputDialog from '../dialogs/HostInfoInput';
 import { InputHostInfo } from '../../types/InputHostInfo';
+import { green } from '@material-ui/core/colors';
 
 const useStyles = makeStyles({
     table: {
@@ -120,7 +121,7 @@ const Home: React.FC = (props: any) => {
                                     {host.ID}
                                 </TableCell>
                                 <TableCell>
-                                    {host.active ? <Check></Check> : <></>}
+                                    {host.active ? <Check style={{ color: green[500] }}></Check> : <></>}
                                 </TableCell>
                                 <TableCell>{host.hostname}</TableCell>
                                 <TableCell align='right'>{host.ipaddress}</TableCell>
