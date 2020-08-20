@@ -47,7 +47,8 @@ const HostInfoInputDialog = (props: any) => {
             os: os,
             core: core,
             ram: ram,
-            disk: disk
+            disk: disk,
+            type: 'server'
         };
 
         let isError = false;

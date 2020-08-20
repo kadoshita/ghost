@@ -6,5 +6,6 @@ export type HostInfo = {
     os: string,
     core: number,
     ram: number,
-    disk: number
+    disk: number,
+    type: 'server' | 'router' | 'virtual machine'
 };

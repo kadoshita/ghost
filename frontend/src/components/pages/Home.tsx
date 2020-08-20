@@ -106,6 +106,7 @@ const Home: React.FC = (props: any) => {
                             <TableCell>Active</TableCell>
                             <TableCell>HostName</TableCell>
                             <TableCell align='right'>IP Address</TableCell>
+                            <TableCell align='right'>Type</TableCell>
                             <TableCell align='right'>OS</TableCell>
                             <TableCell align='right'>CPU Core</TableCell>
                             <TableCell align='right'>RAM&nbsp;(MB)</TableCell>
@@ -123,6 +124,7 @@ const Home: React.FC = (props: any) => {
                                 </TableCell>
                                 <TableCell>{host.hostname}</TableCell>
                                 <TableCell align='right'>{host.ipaddress}</TableCell>
+                                <TableCell align='right'>{host.type}</TableCell>
                                 <TableCell align='right'>{host.os}</TableCell>
                                 <TableCell align='right'>{host.core}</TableCell>
                                 <TableCell align='right'>{host.ram}</TableCell>

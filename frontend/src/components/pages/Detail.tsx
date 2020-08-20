@@ -137,6 +137,10 @@ const Detail: React.FC = (props: any) => {
                             <TableCell>{hostData ? hostData.ipaddress : '-'}</TableCell>
                         </TableRow>
                         <TableRow>
+                            <TableCell component='th' scope='row'>Type</TableCell>
+                            <TableCell>{hostData ? hostData.type : '-'}</TableCell>
+                        </TableRow>
+                        <TableRow>
                             <TableCell component='th' scope='row'>CPU Core</TableCell>
                             <TableCell>{hostData ? hostData.core : '-'}</TableCell>
                         </TableRow>

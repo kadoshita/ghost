@@ -23,12 +23,16 @@ type HostInfo struct {
 	Core      int    `json:"core"`
 	RAM       int    `json:"ram"`
 	Disk      int    `json:"disk"`
+	Type      string `json:"type" gorm:"type enum('server','router','virtual machine'); default: 'server'; not null"`
 }
 
 // FindHostByID はホスト情報取得用APIに渡されるパラメーター
 type FindHostByID struct {
 	ID int `uri:"id" binding:"required"`
 }
+
+// HostType はホストの形式一覧
+var HostType = [3]string{"server", "router", "virtual machine"}
 
 var dbCon *gorm.DB
 
@@ -101,8 +105,8 @@ func onPostAPIHost(c *gin.Context) {
 		c.Status(500)
 		log.Fatalln(err)
 	} else {
-		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk)
-		newData := HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk}
+		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk, postData.Type)
+		newData := HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk, Type: postData.Type}
 		dbCon.NewRecord(newData)
 		dbCon.Create(&newData)
 		c.Status(200)
@@ -141,7 +145,7 @@ func onPutAPIHost(c *gin.Context) {
 		return
 	}
 	updateData.ID = uint(updateHostByID.ID)
-	log.Println(updateData.ID, updateData.Active, updateData.HostName, updateData.IPAddress, updateData.Core, updateData.RAM, updateData.Disk)
+	log.Println(updateData.ID, updateData.Active, updateData.HostName, updateData.IPAddress, updateData.Core, updateData.RAM, updateData.Disk, updateData.Type)
 	if err := dbCon.Save(&updateData).Error; err != nil {
 		c.Status(500)
 		log.Fatalln(err)
