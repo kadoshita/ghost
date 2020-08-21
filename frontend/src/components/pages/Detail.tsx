@@ -125,6 +125,10 @@ const Detail: React.FC = (props: any) => {
                             <TableCell>{hostData ? hostData.ID : '-'}</TableCell>
                         </TableRow>
                         <TableRow>
+                            <TableCell component='th' scope='row'>Online</TableCell>
+                            <TableCell>{hostData ? (hostData.online ? 'Online' : 'Offline') : '-'}</TableCell>
+                        </TableRow>
+                        <TableRow>
                             <TableCell component='th' scope='row'>Active</TableCell>
                             <TableCell>{hostData ? (hostData.active ? 'Active' : 'InActive') : '-'}</TableCell>
                         </TableRow>

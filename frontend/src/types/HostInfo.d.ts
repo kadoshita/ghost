@@ -7,6 +7,7 @@ export type HostInfo = {
     core: number,
     ram: number,
     disk: number,
-    type: HostType
+    type: HostType,
+    online: boolean
 };
 export type HostType = 'server' | 'router' | 'virtual machine';

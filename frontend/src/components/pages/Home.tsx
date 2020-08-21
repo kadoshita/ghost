@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import MainTemplate from '../templates/Main';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, IconButton, Grid } from '@material-ui/core'
-import { Check, Add } from '@material-ui/icons';
+import { Check, Add, FiberManualRecord } from '@material-ui/icons';
 import Charts from 'react-apexcharts';
 import { HostInfo } from '../../types/HostInfo';
 import { withRouter } from 'react-router-dom';
 import HostInfoInputDialog from '../dialogs/HostInfoInput';
 import { InputHostInfo } from '../../types/InputHostInfo';
-import { green } from '@material-ui/core/colors';
+import { green, red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles({
     table: {
@@ -103,6 +103,7 @@ const Home: React.FC = (props: any) => {
                 <Table className={classes.table} aria-label='hosts table'>
                     <TableHead>
                         <TableRow>
+                            <TableCell>Online</TableCell>
                             <TableCell>ID</TableCell>
                             <TableCell>Active</TableCell>
                             <TableCell>HostName</TableCell>
@@ -117,6 +118,9 @@ const Home: React.FC = (props: any) => {
                     <TableBody>
                         {hostData.map(host => (
                             <TableRow key={host.hostname} onClick={() => handleTableRowClick(host.ID)} hover>
+                                <TableCell>
+                                    {host.online ? <FiberManualRecord style={{ color: green[500] }}></FiberManualRecord> : <FiberManualRecord style={{ color: red[600] }}></FiberManualRecord>}
+                                </TableCell>
                                 <TableCell component='th' scope='row'>
                                     {host.ID}
                                 </TableCell>

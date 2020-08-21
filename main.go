@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
@@ -16,14 +17,16 @@ import (
 // HostInfo はホストの基本的な情報を持つ
 type HostInfo struct {
 	gorm.Model
-	Active    bool   `json:"active" gorm:"DEFAULT:false"`
-	HostName  string `json:"hostname"`
-	IPAddress string `json:"ipaddress"`
-	OS        string `json:"os"`
-	Core      int    `json:"core"`
-	RAM       int    `json:"ram"`
-	Disk      int    `json:"disk"`
-	Type      string `json:"type" gorm:"type enum('server','router','virtual machine'); default: 'server'; not null"`
+	Active    bool      `json:"active" gorm:"DEFAULT:false"`
+	HostName  string    `json:"hostname"`
+	IPAddress string    `json:"ipaddress"`
+	OS        string    `json:"os"`
+	Core      int       `json:"core"`
+	RAM       int       `json:"ram"`
+	Disk      int       `json:"disk"`
+	Type      string    `json:"type" gorm:"type enum('server','router','virtual machine'); default: 'server'; not null"`
+	Online    bool      `json:"online" gorm:"DEFAULT:false"`
+	OnlineAt  time.Time `json:"online_at"`
 }
 
 // FindHostByID はホスト情報取得用APIに渡されるパラメーター
@@ -75,6 +78,7 @@ func main() {
 		hostAPI.POST("/", onPostAPIHost)
 		hostAPI.DELETE("/:id", onDeleteAPIHost)
 		hostAPI.PUT("/:id", onPutAPIHost)
+		hostAPI.Any("/:id/live", onLiveRequest)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
@@ -147,6 +151,28 @@ func onPutAPIHost(c *gin.Context) {
 	updateData.ID = uint(updateHostByID.ID)
 	log.Println(updateData.ID, updateData.Active, updateData.HostName, updateData.IPAddress, updateData.Core, updateData.RAM, updateData.Disk, updateData.Type)
 	if err := dbCon.Save(&updateData).Error; err != nil {
+		c.Status(500)
+		log.Fatalln(err)
+		return
+	}
+	c.Status(200)
+}
+
+func onLiveRequest(c *gin.Context) {
+	var liveHostByID FindHostByID
+	if err := c.ShouldBindUri(&liveHostByID); err != nil {
+		c.JSON(400, gin.H{"message": "parameter error"})
+		return
+	}
+	var hostInfo HostInfo
+	hostInfo.ID = uint(liveHostByID.ID)
+	if dbCon.First(&hostInfo).RecordNotFound() {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+	hostInfo.Online = true
+	hostInfo.OnlineAt = time.Now()
+	if err := dbCon.Save(&hostInfo).Error; err != nil {
 		c.Status(500)
 		log.Fatalln(err)
 		return
