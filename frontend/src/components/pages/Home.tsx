@@ -76,7 +76,23 @@ const Home: React.FC = (props: any) => {
     return (
         <MainTemplate title='Home' titleBarButtons={titleBarButtonList}>
             <Grid container>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
+                    <Charts
+                        type='pie'
+                        series={[
+                            hostData.filter(h => h.online).length,
+                            hostData.filter(h => !h.online).length
+                        ]}
+                        options={{
+                            labels: ['Online', 'Offline'],
+                            colors: ['#00E396', '#FF4560'],
+                            tooltip: {
+                                enabled: false
+                            }
+                        }}
+                    ></Charts>
+                </Grid>
+                <Grid item xs={2}>
                     <Charts
                         type='pie'
                         series={[
@@ -84,11 +100,15 @@ const Home: React.FC = (props: any) => {
                             hostData.filter(h => !h.active).length
                         ]}
                         options={{
-                            labels: ['Active', 'InActive']
+                            labels: ['Active', 'InActive'],
+                            colors: ['#00E396', '#FF4560'],
+                            tooltip: {
+                                enabled: false
+                            }
                         }}
                     ></Charts>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <Charts
                         type='pie'
                         series={osCount}
