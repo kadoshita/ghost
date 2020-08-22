@@ -87,6 +87,20 @@ func main() {
 func onGetAPIHosts(c *gin.Context) {
 	var allHostInfo []HostInfo
 	dbCon.Find(&allHostInfo)
+
+	nowUnixTime := time.Now().Unix()
+	for i := range allHostInfo {
+		if nowUnixTime-allHostInfo[i].OnlineAt.Unix() > 10 {
+			allHostInfo[i].Online = false
+		}
+		hostInfo := allHostInfo[i]
+		if err := dbCon.Save(&hostInfo).Error; err != nil {
+			log.Println("cannot update online status")
+			log.Fatalln(err)
+			return
+		}
+	}
+
 	c.JSON(200, allHostInfo)
 }
 func onGetAPIHostByID(c *gin.Context) {
@@ -100,6 +114,17 @@ func onGetAPIHostByID(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "NotFound"})
 		return
 	}
+
+	if time.Now().Unix()-hostInfo.OnlineAt.Unix() > 10 {
+		hostInfo.Online = false
+	}
+
+	if err := dbCon.Save(&hostInfo).Error; err != nil {
+		log.Println("cannot update online status")
+		log.Fatalln(err)
+		return
+	}
+
 	c.JSON(200, hostInfo)
 }
 func onPostAPIHost(c *gin.Context) {
