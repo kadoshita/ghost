@@ -70,9 +70,6 @@ const Home: React.FC = (props: any) => {
         </IconButton>
     ];
 
-    const os = Array.from(new Set(hostData.map(h => h.os)));
-    const osCount = os.map(v => hostData.filter(h => h.os === v).length);
-
     return (
         <MainTemplate title='Home' titleBarButtons={titleBarButtonList}>
             <Grid container>
@@ -105,15 +102,6 @@ const Home: React.FC = (props: any) => {
                             tooltip: {
                                 enabled: false
                             }
-                        }}
-                    ></Charts>
-                </Grid>
-                <Grid item xs={2}>
-                    <Charts
-                        type='pie'
-                        series={osCount}
-                        options={{
-                            labels: os
                         }}
                     ></Charts>
                 </Grid>
