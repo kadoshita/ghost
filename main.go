@@ -29,13 +29,24 @@ type HostInfo struct {
 	OnlineAt  time.Time `json:"online_at"`
 }
 
+// HostType はホストの形式の情報
+type HostType struct {
+	gorm.Model
+	Type string `json:"hosttype"`
+}
+
+// Setting はアプリケーションの設定情報を持つ
+type Setting struct {
+	gorm.Model
+	Timeout    int `json:"timeout" gorm:"DEFAULT:10"`
+	HostTypeID int
+	HostType   HostType `json:"type"`
+}
+
 // FindHostByID はホスト情報取得用APIに渡されるパラメーター
 type FindHostByID struct {
 	ID int `uri:"id" binding:"required"`
 }
-
-// HostType はホストの形式一覧
-var HostType = [3]string{"server", "router", "virtual machine"}
 
 var dbCon *gorm.DB
 
@@ -59,6 +70,8 @@ func main() {
 	defer db.Close()
 
 	db.AutoMigrate(&HostInfo{})
+	db.AutoMigrate(&Setting{})
+	db.AutoMigrate(&HostType{})
 
 	dbCon = db
 
