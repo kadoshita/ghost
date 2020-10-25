@@ -3,7 +3,6 @@ import { InputHostInfo } from '../../types/InputHostInfo';
 import { HostType } from '../../types/HostInfo';
 import { Dialog, DialogTitle, DialogContent, FormControlLabel, TextField, DialogActions, Button, Switch, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
-
 const HostInfoInputDialog = (props: any) => {
     const [active, setActive] = useState<boolean>(false);
     const [hostName, setHostName] = useState<string>('');
@@ -18,7 +17,8 @@ const HostInfoInputDialog = (props: any) => {
     const [ramInputError, setRamInputError] = useState<string>('');
     const [disk, setDisk] = useState<number>(32);
     const [diskInputError, setDiskInputError] = useState<string>('');
-    const [type, setType] = useState<HostType>('server');
+    const [type, setType] = useState<HostType>({ value: 0, name: '' });
+    const [typeList, setTypeList] = useState<HostType[]>([{ value: 0, name: '' }]);
     const formItemList = [
         { id: 'hostname', label: 'HostName', default: props.hostname, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value), error: hostNameInputError },
         { id: 'ipaddress', label: 'IP Address', default: props.ipaddress, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setIpAddress(e.target.value), error: ipAddressInputError },
@@ -35,7 +35,7 @@ const HostInfoInputDialog = (props: any) => {
         setCore(1);
         setRam(1024);
         setDisk(32);
-        setType('router');
+        setType({ value: 0, name: '' });
         setHostNameInputError('');
         setIpAddressInputError('')
         setOsInputError('');
@@ -144,6 +144,15 @@ const HostInfoInputDialog = (props: any) => {
             setType(props.type);
         }
     }, [props.type]);
+    useEffect(() => {
+        const getHostTypeList = async () => {
+            const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+            const res = await fetch(`${API_ENDPOINT}/setting/hosttype`);
+            const resJson = await res.json();
+            setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ value: d.ID, name: d.hosttype })));
+        };
+        getHostTypeList();
+    }, []);
     return (
         <Dialog open={props.open} onClose={handleClose} aria-labelledby='form-dialog-title'>
             <DialogTitle id='form-dialog-title'>ホスト情報登録</DialogTitle>
@@ -176,12 +185,12 @@ const HostInfoInputDialog = (props: any) => {
                     <Select
                         labelId="host-type"
                         id="host-type-select"
-                        value={type}
+                        value={type.value || typeList[0].value}
                         onChange={e => setType(e.target.value as HostType)}
                     >
-                        <MenuItem value='server'>Server</MenuItem>
-                        <MenuItem value='router'>Router</MenuItem>
-                        <MenuItem value='virtual machine'>Virtual Machine</MenuItem>
+                        {typeList?.map((h, i) => (
+                            <MenuItem key={i} value={h.value} selected={(type.value === h.value || i === 0)}>{h.name}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
             </DialogContent>

@@ -10,4 +10,7 @@ export type HostInfo = {
     type: HostType,
     online: boolean
 };
-export type HostType = 'server' | 'router' | 'virtual machine';
+export type HostType = {
+    value: number,
+    name: string
+};
