@@ -7,7 +7,7 @@ export type HostInfo = {
     core: number,
     ram: number,
     disk: number,
-    type: HostType,
+    type: number,
     online: boolean
 };
 export type HostType = {

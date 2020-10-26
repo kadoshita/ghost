@@ -17,7 +17,7 @@ const HostInfoInputDialog = (props: any) => {
     const [ramInputError, setRamInputError] = useState<string>('');
     const [disk, setDisk] = useState<number>(32);
     const [diskInputError, setDiskInputError] = useState<string>('');
-    const [type, setType] = useState<HostType>({ value: 0, name: '' });
+    const [type, setType] = useState<number>(0);
     const [typeList, setTypeList] = useState<HostType[]>([{ value: 0, name: '' }]);
     const formItemList = [
         { id: 'hostname', label: 'HostName', default: props.hostname, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value), error: hostNameInputError },
@@ -35,7 +35,7 @@ const HostInfoInputDialog = (props: any) => {
         setCore(1);
         setRam(1024);
         setDisk(32);
-        setType({ value: 0, name: '' });
+        setType(0);
         setHostNameInputError('');
         setIpAddressInputError('')
         setOsInputError('');
@@ -150,6 +150,7 @@ const HostInfoInputDialog = (props: any) => {
             const res = await fetch(`${API_ENDPOINT}/setting/hosttype`);
             const resJson = await res.json();
             setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ value: d.ID, name: d.hosttype })));
+            setType(resJson[0].ID);
         };
         getHostTypeList();
     }, []);
@@ -185,11 +186,11 @@ const HostInfoInputDialog = (props: any) => {
                     <Select
                         labelId="host-type"
                         id="host-type-select"
-                        value={type.value || typeList[0].value}
-                        onChange={e => setType(e.target.value as HostType)}
+                        value={type || typeList[0].value}
+                        onChange={e => setType(e.target.value as number)}
                     >
                         {typeList?.map((h, i) => (
-                            <MenuItem key={i} value={h.value} selected={(type.value === h.value || i === 0)}>{h.name}</MenuItem>
+                            <MenuItem key={i} value={h.value} selected={(type === h.value || i === 0)}>{h.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>

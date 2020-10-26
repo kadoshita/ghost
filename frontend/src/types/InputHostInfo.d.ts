@@ -7,5 +7,5 @@ export type InputHostInfo = {
     core: number,
     ram: number,
     disk: number,
-    type: HostType
+    type: number
 };
