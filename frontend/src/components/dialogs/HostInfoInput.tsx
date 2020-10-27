@@ -149,7 +149,7 @@ const HostInfoInputDialog = (props: any) => {
             const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
             const res = await fetch(`${API_ENDPOINT}/setting/hosttype`);
             const resJson = await res.json();
-            setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ value: d.ID, name: d.hosttype })));
+            setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ ID: d.ID, hosttype: d.hosttype })));
             setType(resJson[0].ID);
         };
         getHostTypeList();
