@@ -18,7 +18,7 @@ const HostInfoInputDialog = (props: any) => {
     const [disk, setDisk] = useState<number>(32);
     const [diskInputError, setDiskInputError] = useState<string>('');
     const [type, setType] = useState<number>(0);
-    const [typeList, setTypeList] = useState<HostType[]>([{ value: 0, name: '' }]);
+    const [typeList, setTypeList] = useState<HostType[]>([{ ID: 0, hosttype: '' }]);
     const formItemList = [
         { id: 'hostname', label: 'HostName', default: props.hostname, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value), error: hostNameInputError },
         { id: 'ipaddress', label: 'IP Address', default: props.ipaddress, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setIpAddress(e.target.value), error: ipAddressInputError },
@@ -186,11 +186,11 @@ const HostInfoInputDialog = (props: any) => {
                     <Select
                         labelId="host-type"
                         id="host-type-select"
-                        value={type || typeList[0].value}
+                        value={type || typeList[0].ID}
                         onChange={e => setType(e.target.value as number)}
                     >
                         {typeList?.map((h, i) => (
-                            <MenuItem key={i} value={h.value} selected={(type === h.value || i === 0)}>{h.name}</MenuItem>
+                            <MenuItem key={i} value={h.ID} selected={(type === h.ID || i === 0)}>{h.hosttype}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>

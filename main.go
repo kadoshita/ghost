@@ -17,16 +17,18 @@ import (
 // HostInfo はホストの基本的な情報を持つ
 type HostInfo struct {
 	gorm.Model
-	Active    bool      `json:"active" gorm:"DEFAULT:false"`
-	HostName  string    `json:"hostname"`
-	IPAddress string    `json:"ipaddress"`
-	OS        string    `json:"os"`
-	Core      int       `json:"core"`
-	RAM       int       `json:"ram"`
-	Disk      int       `json:"disk"`
-	Type      string    `json:"type" gorm:"type enum('server','router','virtual machine'); default: 'server'; not null"`
-	Online    bool      `json:"online" gorm:"DEFAULT:false"`
-	OnlineAt  time.Time `json:"online_at"`
+	Active    bool   `json:"active" gorm:"DEFAULT:false"`
+	HostName  string `json:"hostname"`
+	IPAddress string `json:"ipaddress"`
+	OS        string `json:"os"`
+	Core      int    `json:"core"`
+	RAM       int    `json:"ram"`
+	Disk      int    `json:"disk"`
+	// Type      string    `json:"type" gorm:"type enum('server','router','virtual machine'); default: 'server'; not null"`
+	HostTypeID uint `json:"type"`
+	HostType   HostType
+	Online     bool      `json:"online" gorm:"DEFAULT:false"`
+	OnlineAt   time.Time `json:"online_at"`
 }
 
 // HostType はホストの形式の情報
@@ -93,6 +95,10 @@ func main() {
 		hostAPI.PUT("/:id", onPutAPIHost)
 		hostAPI.Any("/:id/live", onLiveRequest)
 	}
+	settingAPI := r.Group("/api/setting")
+	{
+		settingAPI.GET("/hosttype", onGetAPIHostTypes)
+	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
 }
@@ -100,6 +106,9 @@ func main() {
 func onGetAPIHosts(c *gin.Context) {
 	var allHostInfo []HostInfo
 	dbCon.Find(&allHostInfo)
+	for i := range allHostInfo {
+		dbCon.Model(allHostInfo[i]).Related(&allHostInfo[i].HostType, "HostType")
+	}
 
 	nowUnixTime := time.Now().Unix()
 	for i := range allHostInfo {
@@ -128,6 +137,8 @@ func onGetAPIHostByID(c *gin.Context) {
 		return
 	}
 
+	dbCon.Model(&hostInfo).Related(&hostInfo.HostType, "HostType")
+
 	if time.Now().Unix()-hostInfo.OnlineAt.Unix() > 10 {
 		hostInfo.Online = false
 	}
@@ -147,8 +158,8 @@ func onPostAPIHost(c *gin.Context) {
 		c.Status(500)
 		log.Fatalln(err)
 	} else {
-		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk, postData.Type)
-		newData := HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk, Type: postData.Type}
+		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk, postData.HostTypeID)
+		newData := HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk, HostTypeID: postData.HostTypeID}
 		dbCon.NewRecord(newData)
 		dbCon.Create(&newData)
 		c.Status(200)
@@ -187,7 +198,7 @@ func onPutAPIHost(c *gin.Context) {
 		return
 	}
 	updateData.ID = uint(updateHostByID.ID)
-	log.Println(updateData.ID, updateData.Active, updateData.HostName, updateData.IPAddress, updateData.Core, updateData.RAM, updateData.Disk, updateData.Type)
+	log.Println(updateData.ID, updateData.Active, updateData.HostName, updateData.IPAddress, updateData.Core, updateData.RAM, updateData.Disk, updateData.HostTypeID)
 	if err := dbCon.Save(&updateData).Error; err != nil {
 		c.Status(500)
 		log.Fatalln(err)
@@ -216,4 +227,10 @@ func onLiveRequest(c *gin.Context) {
 		return
 	}
 	c.Status(200)
+}
+
+func onGetAPIHostTypes(c *gin.Context) {
+	var allHostType []HostType
+	dbCon.Find(&allHostType)
+	c.JSON(200, allHostType)
 }

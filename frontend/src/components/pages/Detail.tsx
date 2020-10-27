@@ -31,6 +31,10 @@ const HostInfoDeleteDialog = (props: any) => {
     );
 };
 
+type DetailParams = {
+    id: string | undefined
+};
+
 const Detail: React.FC = (props: any) => {
     window.document.title = 'Detail - ghost';
 
@@ -38,7 +42,7 @@ const Detail: React.FC = (props: any) => {
     const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
     const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
 
-    const { id } = useParams();
+    const { id } = useParams<DetailParams>();
     const classes = useStyles();
 
     useEffect(() => {
@@ -142,7 +146,7 @@ const Detail: React.FC = (props: any) => {
                         </TableRow>
                         <TableRow>
                             <TableCell component='th' scope='row'>Type</TableCell>
-                            <TableCell>{hostData ? hostData.type : '-'}</TableCell>
+                            <TableCell>{hostData ? hostData.HostType.hosttype : '-'}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component='th' scope='row'>CPU Core</TableCell>

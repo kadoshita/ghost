@@ -137,7 +137,7 @@ const Home: React.FC = (props: any) => {
                                 </TableCell>
                                 <TableCell>{host.hostname}</TableCell>
                                 <TableCell align='right'>{host.ipaddress}</TableCell>
-                                <TableCell align='right'>{host.type}</TableCell>
+                                <TableCell align='right'>{host.HostType.hosttype}</TableCell>
                                 <TableCell align='right'>{host.os}</TableCell>
                                 <TableCell align='right'>{host.core}</TableCell>
                                 <TableCell align='right'>{host.ram}</TableCell>
