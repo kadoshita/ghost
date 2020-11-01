@@ -40,9 +40,7 @@ type HostType struct {
 // Setting はアプリケーションの設定情報を持つ
 type Setting struct {
 	gorm.Model
-	Timeout    int `json:"timeout" gorm:"DEFAULT:10"`
-	HostTypeID int
-	HostType   HostType `json:"type"`
+	Timeout int `json:"timeout" gorm:"DEFAULT:10"`
 }
 
 // FindHostByID はホスト情報取得用APIに渡されるパラメーター
@@ -75,6 +73,10 @@ func main() {
 	db.AutoMigrate(&Setting{})
 	db.AutoMigrate(&HostType{})
 
+	initSetting := Setting{}
+	db.NewRecord(&initSetting)
+	db.Create(&initSetting)
+
 	dbCon = db
 
 	r := gin.Default()
@@ -98,6 +100,7 @@ func main() {
 	settingAPI := r.Group("/api/setting")
 	{
 		settingAPI.GET("/hosttype", onGetAPIHostTypes)
+		settingAPI.GET("/timeout", onGetAPITimeOut)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
@@ -233,4 +236,13 @@ func onGetAPIHostTypes(c *gin.Context) {
 	var allHostType []HostType
 	dbCon.Find(&allHostType)
 	c.JSON(200, allHostType)
+}
+func onGetAPITimeOut(c *gin.Context) {
+	var setting Setting
+	if dbCon.First(&setting).RecordNotFound() {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+
+	c.JSON(200, setting.Timeout)
 }
