@@ -101,6 +101,7 @@ func main() {
 	{
 		settingAPI.GET("/hosttype", onGetAPIHostTypes)
 		settingAPI.GET("/timeout", onGetAPITimeOut)
+		settingAPI.PUT("/timeout", onPutAPITimeOut)
 	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
@@ -245,4 +246,26 @@ func onGetAPITimeOut(c *gin.Context) {
 	}
 
 	c.JSON(200, setting.Timeout)
+}
+func onPutAPITimeOut(c *gin.Context) {
+	var setting Setting
+	err := c.ShouldBindJSON(&setting)
+	if err != nil {
+		c.Status(500)
+		log.Fatalln(err)
+	} else {
+		var currentSetting Setting
+		if dbCon.First(&currentSetting).RecordNotFound() {
+			c.Status(500)
+			log.Println("Setting NotFound")
+		}
+		settingID := currentSetting.ID
+		setting.ID = settingID
+		if err := dbCon.Save(&setting).Error; err != nil {
+			c.Status(500)
+			log.Fatalln(err)
+			return
+		}
+		c.Status(200)
+	}
 }
