@@ -16,6 +16,7 @@ const Setting: React.FC = () => {
     const classes = useStyles();
 
     const [typeList, setTypeList] = useState<HostType[]>([{ ID: 0, hosttype: '' }]);
+    const [timeoutSetting, setTimeoutSetting] = useState<number>(10);
 
     useEffect(() => {
         const getHostTypeList = async () => {
@@ -24,8 +25,25 @@ const Setting: React.FC = () => {
             const resJson = await res.json();
             setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ ID: d.ID, hosttype: d.hosttype })));
         };
+        const getTimeoutSetting = async () => {
+            const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+            const res = await fetch(`${API_ENDPOINT}/setting/timeout`);
+            const resJson = await res.json();
+            setTimeoutSetting(resJson);
+        }
         getHostTypeList();
+        getTimeoutSetting();
     }, []);
+
+    const handleClickTimeoutSave = async () => {
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+        await fetch(`${API_ENDPOINT}/setting/timeout`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                timeout: timeoutSetting
+            })
+        });
+    };
 
     return (
         <MainTemplate title='Settings'>
@@ -46,6 +64,8 @@ const Setting: React.FC = () => {
                                 label='Onlineタイムアウト時間'
                                 name='timeout'
                                 fullWidth
+                                value={timeoutSetting}
+                                onChange={e => setTimeoutSetting(parseInt(e.target.value, 10))}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}>
@@ -53,7 +73,7 @@ const Setting: React.FC = () => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={1}>
-                        <Button color='primary' fullWidth variant='contained'>保存</Button>
+                        <Button color='primary' fullWidth variant='contained' onClick={handleClickTimeoutSave}>保存</Button>
                     </Grid>
                 </Grid>
                 <Divider className={classes.divider}></Divider>
