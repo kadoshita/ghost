@@ -100,6 +100,7 @@ func main() {
 	settingAPI := r.Group("/api/setting")
 	{
 		settingAPI.GET("/hosttype", onGetAPIHostTypes)
+		settingAPI.POST("/hosttype", onPostAPIHostType)
 		settingAPI.GET("/timeout", onGetAPITimeOut)
 		settingAPI.PUT("/timeout", onPutAPITimeOut)
 	}
@@ -237,6 +238,20 @@ func onGetAPIHostTypes(c *gin.Context) {
 	var allHostType []HostType
 	dbCon.Find(&allHostType)
 	c.JSON(200, allHostType)
+}
+
+func onPostAPIHostType(c *gin.Context) {
+	var postData HostType
+	err := c.ShouldBindJSON(&postData)
+	if err != nil {
+		c.Status(500)
+		log.Fatalln(err)
+	} else {
+		log.Println(postData.Type)
+		dbCon.NewRecord(postData)
+		dbCon.Create(&postData)
+		c.Status(200)
+	}
 }
 func onGetAPITimeOut(c *gin.Context) {
 	var setting Setting
