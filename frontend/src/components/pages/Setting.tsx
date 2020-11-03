@@ -15,26 +15,38 @@ const Setting: React.FC = () => {
 
     const classes = useStyles();
 
+    const [newHostType, setNewHostType] = useState('');
     const [typeList, setTypeList] = useState<HostType[]>([{ ID: 0, hosttype: '' }]);
     const [timeoutSetting, setTimeoutSetting] = useState<number>(10);
+    const getHostTypeList = async () => {
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+        const res = await fetch(`${API_ENDPOINT}/setting/hosttype`);
+        const resJson = await res.json();
+        setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ ID: d.ID, hosttype: d.hosttype })));
+    };
+    const getTimeoutSetting = async () => {
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+        const res = await fetch(`${API_ENDPOINT}/setting/timeout`);
+        const resJson = await res.json();
+        setTimeoutSetting(resJson);
+    }
 
     useEffect(() => {
-        const getHostTypeList = async () => {
-            const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
-            const res = await fetch(`${API_ENDPOINT}/setting/hosttype`);
-            const resJson = await res.json();
-            setTypeList(resJson.map((d: { hosttype: string; ID: number; }) => ({ ID: d.ID, hosttype: d.hosttype })));
-        };
-        const getTimeoutSetting = async () => {
-            const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
-            const res = await fetch(`${API_ENDPOINT}/setting/timeout`);
-            const resJson = await res.json();
-            setTimeoutSetting(resJson);
-        }
         getHostTypeList();
         getTimeoutSetting();
     }, []);
 
+    const handleClickHostTypeSave = async () => {
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+        await fetch(`${API_ENDPOINT}/setting/hosttype`, {
+            method: 'POST',
+            body: JSON.stringify({
+                hosttype: newHostType
+            })
+        });
+        setNewHostType('');
+        getHostTypeList();
+    };
     const handleClickTimeoutSave = async () => {
         const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
         await fetch(`${API_ENDPOINT}/setting/timeout`, {
@@ -43,6 +55,7 @@ const Setting: React.FC = () => {
                 timeout: timeoutSetting
             })
         });
+        getTimeoutSetting();
     };
 
     return (
@@ -84,13 +97,15 @@ const Setting: React.FC = () => {
                                 fullWidth
                                 label='ホストタイプ'
                                 name='hosttype'
+                                value={newHostType}
+                                onChange={e => setNewHostType(e.target.value)}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}></TextField>
                         </FormControl>
                     </Grid>
                     <Grid item xs={1}>
-                        <Button color='primary' fullWidth variant='contained'>保存</Button>
+                        <Button color='primary' fullWidth variant='contained' onClick={handleClickHostTypeSave}>保存</Button>
                     </Grid>
                 </Grid>
                 <List component='nav' aria-label='host type list'>
