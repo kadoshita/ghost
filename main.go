@@ -101,6 +101,7 @@ func main() {
 	{
 		settingAPI.GET("/hosttype", onGetAPIHostTypes)
 		settingAPI.POST("/hosttype", onPostAPIHostType)
+		settingAPI.DELETE("/hosttype/:id", onDeleteAPIHostType)
 		settingAPI.GET("/timeout", onGetAPITimeOut)
 		settingAPI.PUT("/timeout", onPutAPITimeOut)
 	}
@@ -253,6 +254,26 @@ func onPostAPIHostType(c *gin.Context) {
 		c.Status(200)
 	}
 }
+func onDeleteAPIHostType(c *gin.Context) {
+	var deleteHostTypeByID FindHostByID
+	if err := c.ShouldBindUri(&deleteHostTypeByID); err != nil {
+		c.JSON(400, gin.H{"message": "parameter error"})
+		return
+	}
+	var hostType HostType
+	hostType.ID = uint(deleteHostTypeByID.ID)
+	if dbCon.First(&hostType).RecordNotFound() {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+	if err := dbCon.Delete(&hostType).Error; err != nil {
+		log.Fatalln(err)
+		c.Status(500)
+		return
+	}
+	c.Status(200)
+}
+
 func onGetAPITimeOut(c *gin.Context) {
 	var setting Setting
 	if dbCon.First(&setting).RecordNotFound() {
