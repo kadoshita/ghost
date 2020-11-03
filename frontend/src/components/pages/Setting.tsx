@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MainTemplate from '../templates/Main';
-import { TextField, FormControl, List, ListItem, ListItemText, Divider, makeStyles, Button, Grid } from '@material-ui/core';
+import { TextField, FormControl, List, ListItem, ListItemText, Divider, makeStyles, Button, Grid, ListItemSecondaryAction, IconButton } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 import { HostType } from '../../types/HostInfo';
 
 const useStyles = makeStyles({
@@ -57,6 +58,13 @@ const Setting: React.FC = () => {
         });
         getTimeoutSetting();
     };
+    const handleClickHostTypeDelete = async (id: number) => {
+        const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || '/api';
+        await fetch(`${API_ENDPOINT}/setting/hosttype/${id}`, {
+            method: 'DELETE'
+        });
+        getHostTypeList();
+    };
 
     return (
         <MainTemplate title='Settings'>
@@ -108,13 +116,22 @@ const Setting: React.FC = () => {
                         <Button color='primary' fullWidth variant='contained' onClick={handleClickHostTypeSave}>保存</Button>
                     </Grid>
                 </Grid>
-                <List component='nav' aria-label='host type list'>
-                    {typeList.map((t, i) => (
-                        <ListItem key={i}>
-                            <ListItemText primary={t.hosttype}></ListItemText>
-                        </ListItem>
-                    ))}
-                </List>
+                <Grid container>
+                    <Grid item xs={3}>
+                        <List component='nav' aria-label='host type list'>
+                            {typeList.map((t, i) => (
+                                <ListItem key={i}>
+                                    <ListItemText primary={t.hosttype}></ListItemText>
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge='end' aria-label='delete' onClick={e => handleClickHostTypeDelete(t.ID)}>
+                                            <Delete></Delete>
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Grid>
+                </Grid>
             </form>
         </MainTemplate>
     );
