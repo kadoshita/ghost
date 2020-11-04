@@ -49,6 +49,7 @@ type FindHostByID struct {
 }
 
 var dbCon *gorm.DB
+var timeoutSecond int
 
 func main() {
 	err := godotenv.Load()
@@ -76,6 +77,12 @@ func main() {
 	initSetting := Setting{}
 	db.NewRecord(&initSetting)
 	db.Create(&initSetting)
+
+	var currentSetting Setting
+	if err := db.First(&currentSetting).Error; err != nil {
+		log.Fatalln(err)
+	}
+	timeoutSecond = currentSetting.Timeout
 
 	dbCon = db
 
@@ -118,7 +125,7 @@ func onGetAPIHosts(c *gin.Context) {
 
 	nowUnixTime := time.Now().Unix()
 	for i := range allHostInfo {
-		if nowUnixTime-allHostInfo[i].OnlineAt.Unix() > 10 {
+		if nowUnixTime-allHostInfo[i].OnlineAt.Unix() > int64(timeoutSecond) {
 			allHostInfo[i].Online = false
 		}
 		hostInfo := allHostInfo[i]
@@ -145,7 +152,7 @@ func onGetAPIHostByID(c *gin.Context) {
 
 	dbCon.Model(&hostInfo).Related(&hostInfo.HostType, "HostType")
 
-	if time.Now().Unix()-hostInfo.OnlineAt.Unix() > 10 {
+	if time.Now().Unix()-hostInfo.OnlineAt.Unix() > int64(timeoutSecond) {
 		hostInfo.Online = false
 	}
 
@@ -302,6 +309,7 @@ func onPutAPITimeOut(c *gin.Context) {
 			log.Fatalln(err)
 			return
 		}
+		timeoutSecond = setting.Timeout
 		c.Status(200)
 	}
 }
