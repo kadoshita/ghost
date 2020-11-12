@@ -4,6 +4,7 @@ WORKDIR /go/src
 COPY main.go main.go
 COPY go.mod go.mod
 COPY go.sum go.sum
+COPY src/ src/
 RUN CGO_ENABLED=0 GOOS=linux GIN_MODE=release go build -a -installsuffix cgo -o ghost .
 
 FROM node:lts AS build-frontend
