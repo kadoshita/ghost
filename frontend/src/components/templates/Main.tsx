@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import { Drawer, AppBar, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Menu, ChevronLeft, ChevronRight, Home, Settings } from '@material-ui/icons';
+import { Menu, ChevronLeft, ChevronRight, Home, Settings, Router } from '@material-ui/icons';
 
 const drawerWidth = 240;
 
 const pageList = [
     { title: 'Home', icon: <Home></Home>, path: '' },
+    { title: 'Network', icon: <Router></Router>, path: 'network' },
     { title: 'Settings', icon: <Settings></Settings>, path: 'setting' }
 ];
 
