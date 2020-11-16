@@ -20,6 +20,7 @@ func InitDB() *gorm.DB {
 	db.AutoMigrate(&HostInfo{})
 	db.AutoMigrate(&Setting{})
 	db.AutoMigrate(&HostType{})
+	db.AutoMigrate(&History{})
 
 	initSetting := Setting{}
 	db.NewRecord(&initSetting)
