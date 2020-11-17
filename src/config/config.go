@@ -19,7 +19,7 @@ type Config struct {
 func GetConfing() Config {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("Cannot load .env")
+		log.Fatalln("Cannot load .env")
 	}
 
 	var DBPort int
