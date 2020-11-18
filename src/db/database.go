@@ -10,7 +10,7 @@ import (
 var DB *gorm.DB
 
 func InitDB() *gorm.DB {
-	config := config.GetConfing()
+	config := config.GetConfing("./.env")
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", config.DBUser, config.DBPass, config.DBAddress, config.DBPort, config.DBName)
 	db, err := gorm.Open("mysql", connectionString)
 	if err != nil {

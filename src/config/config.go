@@ -16,17 +16,19 @@ type Config struct {
 	DBName    string
 }
 
-func GetConfing() Config {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalln("Cannot load .env")
+func GetConfing(envpath string) Config {
+	if envpath != "" {
+		err := godotenv.Load(envpath)
+		if err != nil {
+			log.Fatalln("Cannot load .env")
+		}
 	}
 
 	var DBPort int
 	DBUser := os.Getenv("DB_USER")
 	DBPass := os.Getenv("DB_PASS")
 	DBAddress := os.Getenv("DB_ADDRESS")
-	DBPort, err = strconv.Atoi(os.Getenv("DB_PORT"))
+	DBPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
 		log.Fatalln("Cannnot load DBPort config")
 	}
