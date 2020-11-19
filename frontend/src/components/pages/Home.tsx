@@ -125,7 +125,7 @@ const Home: React.FC = (props: any) => {
                     </TableHead>
                     <TableBody>
                         {hostData.map(host => (
-                            <TableRow key={host.hostname} onClick={() => handleTableRowClick(host.ID)} hover>
+                            <TableRow key={host.hostname} onClick={() => handleTableRowClick(host.ID)} hover style={{ cursor: 'pointer' }}>
                                 <TableCell>
                                     {host.online ? <FiberManualRecord style={{ color: green[500] }}></FiberManualRecord> : <FiberManualRecord style={{ color: red[600] }}></FiberManualRecord>}
                                 </TableCell>
