@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/kadoshita/ghost/src/config"
 	"github.com/kadoshita/ghost/src/controller/api"
 	"github.com/kadoshita/ghost/src/db"
 
@@ -17,7 +18,8 @@ var dbCon *gorm.DB
 var timeoutSecond int
 
 func main() {
-	dbCon = db.InitDB()
+	config := config.GetConfing("./.env")
+	dbCon = db.InitDB(config)
 
 	defer dbCon.Close()
 

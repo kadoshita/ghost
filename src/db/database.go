@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/kadoshita/ghost/src/config"
 )
 
 var DB *gorm.DB
 
-func InitDB() *gorm.DB {
-	config := config.GetConfing("./.env")
+func InitDB(config config.Config) *gorm.DB {
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", config.DBUser, config.DBPass, config.DBAddress, config.DBPort, config.DBName)
 	db, err := gorm.Open("mysql", connectionString)
 	if err != nil {
