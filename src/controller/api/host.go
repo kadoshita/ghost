@@ -28,6 +28,17 @@ func OnGetAPIHosts(c *gin.Context) {
 	for i := range allHostInfo {
 		if nowUnixTime-allHostInfo[i].OnlineAt.Unix() > timeoutSecond {
 			allHostInfo[i].Online = false
+			history := db.History{
+				HostInfo: allHostInfo[i],
+				IsUP:     false,
+			}
+			err := db.InsertHistory(history)
+			if err != nil {
+				log.Println("Cannot update history status to offline")
+				log.Fatalln(err)
+				c.Status(500)
+				return
+			}
 		}
 		hostInfo := allHostInfo[i]
 		err := db.UpdateHost(hostInfo)
@@ -58,6 +69,17 @@ func OnGetAPIHostByID(c *gin.Context) {
 	timeoutSecond := int64(setting.Timeout)
 	if time.Now().Unix()-hostInfo.OnlineAt.Unix() > timeoutSecond {
 		hostInfo.Online = false
+		history := db.History{
+			HostInfo: hostInfo,
+			IsUP:     false,
+		}
+		err := db.InsertHistory(history)
+		if err != nil {
+			log.Println("Cannot update history status to offline")
+			log.Fatalln(err)
+			c.Status(500)
+			return
+		}
 	}
 
 	err := db.UpdateHost(hostInfo)
@@ -134,6 +156,18 @@ func OnLiveRequest(c *gin.Context) {
 	hostInfo.OnlineAt = time.Now()
 	if err := db.UpdateHost(hostInfo); err != nil {
 		c.Status(500)
+		log.Fatalln(err)
+		return
+	}
+
+	history := db.History{
+		HostInfo: hostInfo,
+		IsUP:     true,
+	}
+	err := db.InsertHistory(history)
+	if err != nil {
+		c.Status(500)
+		log.Println("cannot update host status to online")
 		log.Fatalln(err)
 		return
 	}
