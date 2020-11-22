@@ -49,6 +49,10 @@ func main() {
 		settingAPI.GET("/timeout", api.OnGetAPITimeOut)
 		settingAPI.PUT("/timeout", api.OnPutAPITimeOut)
 	}
+	historyAPI := r.Group("/api/history")
+	{
+		historyAPI.GET("/", api.OnGetHistories)
+	}
 	r.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
 	r.Run()
 }
