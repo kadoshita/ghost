@@ -1,0 +1,4 @@
+@host_id=1
+
+# host_live
+GET http://localhost:8080/api/host/{{host_id}}/live
