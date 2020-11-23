@@ -4,11 +4,13 @@ import clsx from 'clsx';
 import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import { Drawer, AppBar, Toolbar, List, CssBaseline, Typography, Divider, IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Menu, ChevronLeft, ChevronRight, Home, Settings, Router } from '@material-ui/icons';
+import HistoryIcon from '@material-ui/icons/History';
 
 const drawerWidth = 240;
 
 const pageList = [
     { title: 'Home', icon: <Home></Home>, path: '' },
+    { title: "History", icon: <HistoryIcon></HistoryIcon>, path: 'history' },
     { title: 'Network', icon: <Router></Router>, path: 'network' },
     { title: 'Settings', icon: <Settings></Settings>, path: 'setting' }
 ];

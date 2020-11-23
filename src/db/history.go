@@ -11,7 +11,7 @@ type History struct {
 	gorm.Model
 	HostInfoID uint `json:"host"`
 	HostInfo   HostInfo
-	IsUP       bool `json:"isup"`
+	IsUP       bool `json:"is_up"`
 }
 
 func GetHistories(limit int) (histories []History) {
