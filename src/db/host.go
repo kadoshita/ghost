@@ -31,10 +31,7 @@ type HostInfo struct {
 
 func GetHosts() (allHostInfo []HostInfo, isNotFound bool) {
 	db := getDB()
-	db.Find(&allHostInfo)
-	for i := range allHostInfo {
-		db.Model(allHostInfo[i]).Related(&allHostInfo[i].HostType, "HostType")
-	}
+	db.Preload("HostType").Find(&allHostInfo)
 	isNotFound = false
 	return
 }

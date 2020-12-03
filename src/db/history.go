@@ -20,10 +20,7 @@ func GetHistories(limit int) (histories []History) {
 		log.Println("limit must be greater than or equal to 1.")
 		return
 	}
-	db.Limit(limit).Order("created_at DESC").Find(&histories)
-	for i := range histories {
-		db.Model(histories[i]).Related(&histories[i].HostInfo, "HostInfo")
-	}
+	db.Limit(limit).Order("created_at DESC").Preload("HostInfo").Find(&histories)
 	return
 }
 
