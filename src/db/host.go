@@ -27,6 +27,7 @@ type HostInfo struct {
 	HostType   HostType
 	Online     bool      `json:"online" gorm:"DEFAULT:false"`
 	OnlineAt   time.Time `json:"online_at"`
+	Note       string    `json:"note"`
 }
 
 func GetHosts() (allHostInfo []HostInfo, isNotFound bool) {

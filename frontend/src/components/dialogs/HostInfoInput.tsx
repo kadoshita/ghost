@@ -3,6 +3,15 @@ import { InputHostInfo } from '../../types/InputHostInfo';
 import { HostType } from '../../types/HostInfo';
 import { Dialog, DialogTitle, DialogContent, FormControlLabel, TextField, DialogActions, Button, Switch, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
+type FormInputItem = {
+    id: string,
+    label: string,
+    default: any,
+    type: 'text' | 'number',
+    onchange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    error: string
+};
+
 const HostInfoInputDialog = (props: any) => {
     const [active, setActive] = useState<boolean>(false);
     const [hostName, setHostName] = useState<string>('');
@@ -19,14 +28,17 @@ const HostInfoInputDialog = (props: any) => {
     const [diskInputError, setDiskInputError] = useState<string>('');
     const [type, setType] = useState<number>(0);
     const [typeList, setTypeList] = useState<HostType[]>([{ ID: 0, hosttype: '' }]);
-    const formItemList = [
+    const [note, setNote] = useState<string>('');
+
+    const formItemList: FormInputItem[] = [
         { id: 'hostname', label: 'HostName', default: props.hostname, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setHostName(e.target.value), error: hostNameInputError },
         { id: 'ipaddress', label: 'IP Address', default: props.ipaddress, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setIpAddress(e.target.value), error: ipAddressInputError },
         { id: 'os', label: 'OS', default: props.os, type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setOs(e.target.value), error: osInputError },
         { id: 'core', label: 'CPU Core', default: props.core || 1, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setCore(parseInt(e.target.value, 10)), error: coreInputError },
         { id: 'ram', label: 'RAM (MB)', default: props.ram || 1024, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setRam(parseInt(e.target.value, 10)), error: ramInputError },
-        { id: 'disk', label: 'Disk (GB)', default: props.disk || 32, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setDisk(parseInt(e.target.value, 10)), error: diskInputError }
-    ];
+        { id: 'disk', label: 'Disk (GB)', default: props.disk || 32, type: 'number', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setDisk(parseInt(e.target.value, 10)), error: diskInputError },
+        { id: 'note', label: 'Note', default: props.note || '', type: 'text', onchange: (e: React.ChangeEvent<HTMLInputElement>) => setNote(e.target.value), error: '' }
+    ]
     const handleClose = () => {
         props.handleClose();
         setHostName('');
@@ -36,8 +48,9 @@ const HostInfoInputDialog = (props: any) => {
         setRam(1024);
         setDisk(32);
         setType(0);
+        setNote('');
         setHostNameInputError('');
-        setIpAddressInputError('')
+        setIpAddressInputError('');
         setOsInputError('');
         setCoreInputError('');
         setRamInputError('');
@@ -52,7 +65,8 @@ const HostInfoInputDialog = (props: any) => {
             core: core,
             ram: ram,
             disk: disk,
-            type: type
+            type: type,
+            note: note
         };
 
         let isError = false;
@@ -139,6 +153,11 @@ const HostInfoInputDialog = (props: any) => {
             setDisk(props.disk);
         }
     }, [props.disk]);
+    useEffect(() => {
+        if (props.note !== undefined) {
+            setNote(props.note);
+        }
+    }, [props.note]);
     useEffect(() => {
         if (props.type !== undefined) {
             setType(props.type);

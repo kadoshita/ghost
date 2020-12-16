@@ -9,7 +9,8 @@ export type HostInfo = {
     disk: number,
     type: number,
     online: boolean,
-    HostType: HostType
+    HostType: HostType,
+    note: string
 };
 export type HostType = {
     ID: number,

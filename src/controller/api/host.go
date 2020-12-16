@@ -100,7 +100,7 @@ func OnPostAPIHost(c *gin.Context) {
 		return
 	} else {
 		log.Println(postData.Active, postData.HostName, postData.IPAddress, postData.Core, postData.RAM, postData.Disk, postData.HostTypeID)
-		newData := db.HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk, HostTypeID: postData.HostTypeID}
+		newData := db.HostInfo{Active: postData.Active, HostName: postData.HostName, IPAddress: postData.IPAddress, OS: postData.OS, Core: postData.Core, RAM: postData.RAM, Disk: postData.Disk, HostTypeID: postData.HostTypeID, Note: postData.Note}
 		if err := db.InsertHost(newData); err != nil {
 			c.Status(400)
 			return

@@ -160,11 +160,15 @@ const Detail: React.FC = (props: any) => {
                             <TableCell component='th' scope='row'>Disk&nbsp;(GB)</TableCell>
                             <TableCell>{hostData ? hostData.disk : '-'} GB</TableCell>
                         </TableRow>
+                        <TableRow>
+                            <TableCell component='th' scope='row'>Note</TableCell>
+                            <TableCell>{hostData ? hostData.note : '-'}</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
             <HostInfoDeleteDialog open={openDeleteDialog} hostname={hostData?.hostname} handleClose={handleDeleteDialogClose}></HostInfoDeleteDialog>
-            <HostInfoInputDialog open={openEditDialog} hostname={hostData?.hostname} active={hostData?.active} ipaddress={hostData?.ipaddress} os={hostData?.os} core={hostData?.core} ram={hostData?.ram} disk={hostData?.disk} type={hostData?.type} handleClose={handleEditDialogClose}></HostInfoInputDialog>
+            <HostInfoInputDialog open={openEditDialog} hostname={hostData?.hostname} active={hostData?.active} ipaddress={hostData?.ipaddress} os={hostData?.os} core={hostData?.core} ram={hostData?.ram} disk={hostData?.disk} type={hostData?.type} note={hostData?.note} handleClose={handleEditDialogClose}></HostInfoInputDialog>
         </MainTemplate>
     );
 };
