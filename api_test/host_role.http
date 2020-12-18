@@ -1,0 +1,11 @@
+# Get host roles
+GET http://localhost:8080/api/setting/hostrole/
+
+### Post new hostrole
+POST http://localhost:8080/api/setting/hostrole/ HTTP/1.1
+content-type: application/json
+
+{
+    "role": "ネットワーク"
+}
+

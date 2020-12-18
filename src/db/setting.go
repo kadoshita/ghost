@@ -16,6 +16,12 @@ func GetSetting() (setting Setting, isNotFound bool) {
 	return
 }
 
+func GetHostRoles() (allHostRole []HostRole, isNotFound bool) {
+	db := getDB()
+	db.Find(&allHostRole)
+	isNotFound = false
+	return
+}
 func GetHostTypes() (allHostType []HostType, isNotFound bool) {
 	db := getDB()
 	db.Find(&allHostType)
@@ -29,6 +35,13 @@ func UpdateSetting(setting Setting) error {
 	return err
 }
 
+func InsertHostRole(hostRole HostRole) error {
+	db := getDB()
+	if db.NewRecord(hostRole) {
+		return db.Create(&hostRole).Error
+	}
+	return nil
+}
 func InsertHostType(hostType HostType) error {
 	db := getDB()
 	if db.NewRecord(hostType) {
@@ -37,6 +50,13 @@ func InsertHostType(hostType HostType) error {
 	return nil
 }
 
+func DeleteHostRole(id int) error {
+	db := getDB()
+	var deleteHostRole HostRole
+	deleteHostRole.ID = uint(id)
+	err := db.Delete(&deleteHostRole).Error
+	return err
+}
 func DeleteHostType(id int) error {
 	db := getDB()
 	var deleteHostType HostType
@@ -45,6 +65,12 @@ func DeleteHostType(id int) error {
 	return err
 }
 
+func IsExistHostRole(id int) bool {
+	db := getDB()
+	var searchHostRole HostRole
+	searchHostRole.ID = uint(id)
+	return !db.First(&searchHostRole).RecordNotFound()
+}
 func IsExistHostType(id int) bool {
 	db := getDB()
 	var searchHostType HostType

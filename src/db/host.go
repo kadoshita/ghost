@@ -6,6 +6,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// HostRole はホストの役割の情報
+type HostRole struct {
+	gorm.Model
+	Role string `json:"role"`
+}
+
 // HostType はホストの形式の情報
 type HostType struct {
 	gorm.Model
@@ -15,16 +21,17 @@ type HostType struct {
 // HostInfo はホストの基本的な情報を持つ
 type HostInfo struct {
 	gorm.Model
-	Active    bool   `json:"active" gorm:"DEFAULT:false"`
-	HostName  string `json:"hostname"`
-	IPAddress string `json:"ipaddress"`
-	OS        string `json:"os"`
-	Core      int    `json:"core"`
-	RAM       int    `json:"ram"`
-	Disk      int    `json:"disk"`
-	// Type      string    `json:"type" gorm:"type enum('server','router','virtual machine'); default: 'server'; not null"`
-	HostTypeID uint `json:"type"`
+	Active     bool   `json:"active" gorm:"DEFAULT:false"`
+	HostName   string `json:"hostname"`
+	IPAddress  string `json:"ipaddress"`
+	OS         string `json:"os"`
+	Core       int    `json:"core"`
+	RAM        int    `json:"ram"`
+	Disk       int    `json:"disk"`
+	HostTypeID uint   `json:"type"`
 	HostType   HostType
+	HostRoleID uint `json:"role"`
+	HostRole   HostRole
 	Online     bool      `json:"online" gorm:"DEFAULT:false"`
 	OnlineAt   time.Time `json:"online_at"`
 	Note       string    `json:"note"`
@@ -32,7 +39,7 @@ type HostInfo struct {
 
 func GetHosts() (allHostInfo []HostInfo, isNotFound bool) {
 	db := getDB()
-	db.Preload("HostType").Find(&allHostInfo)
+	db.Preload("HostType").Preload("HostRole").Find(&allHostInfo)
 	isNotFound = false
 	return
 }
@@ -40,7 +47,7 @@ func GetHosts() (allHostInfo []HostInfo, isNotFound bool) {
 func GetHostById(id int) (hostInfo HostInfo, isNotFound bool) {
 	db := getDB()
 	isNotFound = db.First(&hostInfo, uint(id)).RecordNotFound()
-	db.Model(&hostInfo).Related(&hostInfo.HostType, "HostType")
+	db.Model(&hostInfo).Related(&hostInfo.HostType, "HostType").Related(&hostInfo.HostRole, "HostRole")
 	return
 }
 

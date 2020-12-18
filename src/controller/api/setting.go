@@ -8,6 +8,15 @@ import (
 	"github.com/kadoshita/ghost/src/db"
 )
 
+func OnGetAPIHostRole(c *gin.Context) {
+	allHostRole, isNotFound := db.GetHostRoles()
+	if isNotFound {
+		log.Println("Cannnot get HostRole")
+		c.Status(500)
+		return
+	}
+	c.JSON(200, allHostRole)
+}
 func OnGetAPIHostTypes(c *gin.Context) {
 	allHostType, isNotFound := db.GetHostTypes()
 	if isNotFound {
@@ -18,6 +27,22 @@ func OnGetAPIHostTypes(c *gin.Context) {
 	c.JSON(200, allHostType)
 }
 
+func OnPostAPIHostRole(c *gin.Context) {
+	var postData db.HostRole
+	err := c.ShouldBindJSON(&postData)
+	if err != nil {
+		c.Status(500)
+		log.Fatalln(err)
+	} else {
+		log.Println(postData.Role)
+		if err := db.InsertHostRole(postData); err != nil {
+			log.Fatalln(err)
+			c.Status(500)
+			return
+		}
+		c.Status(200)
+	}
+}
 func OnPostAPIHostType(c *gin.Context) {
 	var postData db.HostType
 	err := c.ShouldBindJSON(&postData)
@@ -33,6 +58,20 @@ func OnPostAPIHostType(c *gin.Context) {
 		}
 		c.Status(200)
 	}
+}
+
+func OnDeleteAPIHostRole(c *gin.Context) {
+	hostRoleID, _ := strconv.Atoi(c.Param("id"))
+	if !db.IsExistHostRole(hostRoleID) {
+		c.JSON(404, gin.H{"message": "NotFound"})
+		return
+	}
+	if err := db.DeleteHostRole(hostRoleID); err != nil {
+		log.Fatalln(err)
+		c.Status(500)
+		return
+	}
+	c.Status(200)
 }
 func OnDeleteAPIHostType(c *gin.Context) {
 	hostTypeID, _ := strconv.Atoi(c.Param("id"))

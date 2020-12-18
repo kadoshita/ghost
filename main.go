@@ -46,6 +46,9 @@ func main() {
 		settingAPI.GET("/hosttype", api.OnGetAPIHostTypes)
 		settingAPI.POST("/hosttype", api.OnPostAPIHostType)
 		settingAPI.DELETE("/hosttype/:id", api.OnDeleteAPIHostType)
+		settingAPI.GET("/hostrole", api.OnGetAPIHostRole)
+		settingAPI.POST("/hostrole", api.OnPostAPIHostRole)
+		settingAPI.DELETE("/hostrole/:id", api.OnDeleteAPIHostRole)
 		settingAPI.GET("/timeout", api.OnGetAPITimeOut)
 		settingAPI.PUT("/timeout", api.OnPutAPITimeOut)
 	}
